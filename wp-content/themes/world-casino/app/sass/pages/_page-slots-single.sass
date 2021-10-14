@@ -1,0 +1,113 @@
+.section-slots-single
+
+	h1
+		font-weight: 500
+		font-size: 36px
+		line-height: 50px
+		margin-bottom: 20px
+
+	.main-game-frame
+		margin-bottom: 50px
+
+		.main-game-frame-box
+			display: flex
+			flex-direction: column
+			border-radius: 5px
+			margin-bottom: 20px
+
+		iframe
+			border-radius: $border-radius $border-radius 0 0
+			border: 0
+
+		.game-frame-nav
+			padding: 18px 20px
+			display: flex
+			justify-content: space-between
+			align-items: center
+			font-size: 24px
+			background-color: $color-white
+			border: 2px solid $color-border
+			border-radius: 0 0 $border-radius $border-radius
+			+nm
+				background-color: lighten($color-grey, 40%)
+				border-color: lighten($color-grey, 20%)
+
+		.game-frame-nav-wrap
+			flex-grow: 1
+
+		.game-frame-nav-rating
+			display: flex
+			align-items: center
+			color: $color-grey
+			font-size: 18px
+			line-height: 25px
+
+		.game-frame-nav-rating-title
+			margin-right: 15px
+			flex-shrink: 0
+			+r(575)
+				display: none
+
+		.post-ratings
+
+			img
+				margin: 0 4px
+				+r(375)
+					margin: 0 1px
+
+		.game-frame-nav-feedback,
+		.game-frame-nav-maximize
+			width: 30px
+			height: 30px
+			cursor: pointer
+
+		.game-frame-nav-feedback
+			+png(feedback)
+
+		.game-frame-nav-maximize
+			+png(fullscreen)
+
+		.btn
+			font-weight: 600
+			font-size: 18px
+			line-height: 22px
+			text-transform: uppercase
+			width: calc(100% - 20px)
+
+		&.fullscreen
+			position: fixed
+			display: flex
+			flex-direction: column
+			top: 0
+			left: 0
+			width: 100vw
+			height: 100vh
+			padding: 40px 57px 40px 40px
+			background-color: #f0f1f2
+			z-index: 10
+			margin-bottom: 0
+			+r(767)
+				padding: 20px 37px 20px 20px
+			+r(575)
+				padding: 15px 32px 15px 15px
+			+nm
+				background-color: $lighten10
+
+			.main-game-frame-box,
+			iframe
+				flex-grow: 1
+
+			.game-frame-nav-maximize
+				+png(nofullscreen)
+
+	.post-content
+		padding: 30px
+		background-color: $color-white
+		border: 2px solid $color-border
+		border-radius: $border-radius
+		+nm
+			background-color: $lighten10
+			border-color: lighten($color-grey, 20%)
+
+	.post
+		margin-bottom: 30px

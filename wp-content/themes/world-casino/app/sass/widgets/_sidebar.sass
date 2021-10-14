@@ -1,0 +1,176 @@
+.widget-title
+	font-size: 24px
+	font-weight: 500
+	line-height: 34px
+	text-align: center
+	margin-bottom: 11px
+
+.widget-casino
+	margin-bottom: 50px
+
+	.widget-content
+		counter-reset: cas
+
+	.widget-casino-item
+		padding: 15px 20px
+		position: relative
+		background-color: $color-white
+		border: 2px solid $color-border
+		border-radius: 10px
+		max-width: 270px
+		margin: 0 auto
+		+nm
+			background-color: $lighten10
+			border-color: lighten($color-grey, 20%)
+
+		&:not(:last-child)
+			margin-bottom: 15px
+
+		&:nth-child(1),
+		&:nth-child(2),
+		&:nth-child(3)
+			border-color: $color-accent
+			+nm
+				border-color: lighten($color-accent, 20%)
+
+			.widget-casino-item-label
+				color: $color-white
+				+png(label-green)
+
+				span
+					border: 2px solid #b4fddd
+					border-radius: 50%
+					margin: 0 0 10px
+
+	.widget-casino-item-label
+		position: absolute
+		width: 40px
+		height: 56px
+		top: -2px
+		left: 8px
+		display: flex
+		align-items: center
+		justify-content: center
+		+png(label-grey)
+		background-size: contain
+		+nm
+			color: $color-text
+
+		span
+			display: inline-block
+			width: 34px
+			height: 34px
+			font-size: 20px
+			font-weight: 500
+			line-height: 28px
+			text-align: center
+			margin: 0 0 5px
+			position: relative
+
+			&::before
+				position: absolute
+				counter-increment: cas
+				content: counter(cas)
+				left: 50%
+				transform: translateX(-50%)
+
+	.widget-casino-img
+		display: block
+		margin-bottom: 15px
+
+		img
+			border-radius: $border-radius
+
+	.widget-casino-nav
+		display: flex
+		justify-content: space-between
+
+		.btn-border,
+		.btn-site
+			width: 110px
+			line-height: 16px
+
+.widget-slots
+	margin-bottom: 50px
+
+	.widget-slot
+		display: flex
+		align-items: center
+		padding: 5px
+		width: 100%
+		background-color: $color-white
+		border: 2px solid $color-border
+		border-radius: $border-radius
+		text-decoration: none
+		+nm
+			background-color: $lighten10
+			border-color: lighten($color-grey, 20%)
+
+		&:not(:last-child)
+			margin-bottom: 10px
+
+	.widget-slot-img
+		border-radius: $border-radius
+		margin-right: 15px
+		flex-shrink: 0
+
+	.widget-slot-title
+		color: $color-text
+		font-size: 15px
+		line-height: 21px
+		transition: $transition
+		flex-grow: 1
+		margin-right: 15px
+		+nm
+			color: $color-white
+
+	.widget-slot-btn
+		width: 30px
+		height: 30px
+		+png(demo-small)
+		background-color: #43d495
+		background-position: center
+		background-repeat: no-repeat
+		border-radius: 50%
+		box-shadow: 5px 5px 10px rgba(67, 212, 149, 0.3)
+		flex-shrink: 0
+
+.widget-news
+
+	.widget-content
+		padding: 15px 20px
+		background-color: $color-white
+		border: 2px solid $color-border
+		border-radius: $border-radius
+		+nm
+			background-color: $lighten10
+			border-color: lighten($color-grey, 20%)
+
+	.widget-news-item
+
+		&:not(:last-child)
+			margin-bottom: 10px
+
+	.widget-news-item-last
+		text-align: center
+
+	.widget-news-date
+		color: $color-grey
+		font-size: 14px
+		line-height: 25px
+		margin-bottom: 5px
+		+nm
+			color: lighten($color-grey, 20%)
+
+	.widget-news-title
+
+		a
+			color: $color-text
+			text-decoration: none
+			+nm
+				color: $color-white
+
+			&:hover
+				color: $color-accent
+				+nm
+					color: lighten($color-accent, 20%)

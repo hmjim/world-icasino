@@ -1,0 +1,134 @@
+.section-slots,
+.search-row
+
+	.slots-loop
+		+r(575)
+			justify-content: center
+
+.item-slot-wrap
+	width: 33.3333%
+	padding-left: 15px
+	padding-right: 15px
+	margin-bottom: 30px
+	+r(1259)
+		width: 50%
+	+r(991)
+		width: 33.3333%
+	+r(767)
+		width: 50%
+	+r(575)
+		width: 100%
+
+.item-slot
+	max-width: 290px
+	margin: 0 auto
+	display: flex
+	flex-direction: column
+	height: 100%
+
+	.item-slot-icon
+		display: block
+		overflow: hidden
+		position: relative
+		border-radius: $border-radius $border-radius 0 0
+
+		&::before
+			position: absolute
+			content: ''
+			top: 0
+			right: 0
+			bottom: 0
+			left: 0
+			background-color: rgba(0, 0, 0, 0.5)
+			opacity: 0
+			transition: $transition-fast
+
+	.item-slot-fav
+		position: absolute
+		top: 10px
+		right: 10px
+		color: $color-white
+		font-size: 25px
+		z-index: 2
+		cursor: pointer
+
+		.fas
+			color: #fdd211
+
+	.item-slot-btns
+		position: absolute
+		width: 100%
+		height: 100%
+		top: 0
+		left: 0
+		display: flex
+		flex-direction: column
+		justify-content: center
+		align-items: center
+		opacity: 0
+		transition: $transition
+
+		.btn
+			width: 142px
+
+		.btn-border
+			margin-bottom: 10px
+
+	.item-slot-title
+		padding: 10px 20px 15px 20px
+		color: $color-text
+		font-weight: 400
+		font-size: 18px
+		line-height: 25px
+		text-decoration: none
+		background-color: $color-white
+		border: 2px solid $color-border
+		border-top: 0
+		border-radius: 0 0 $border-radius $border-radius
+		display: flex
+		flex-grow: 1
+		+nm
+			color: $color-white
+			background-color: $lighten10
+			border-color: lighten($color-grey, 20%)
+
+	.item-slot-text
+		margin-right: 20px
+		flex-grow: 1
+
+	.item-slot-demo
+		padding-top: 23px
+		width: 50px
+		color: $color-grey
+		font-size: 14px
+		line-height: 25px
+		text-align: center
+		text-decoration: none
+		position: relative
+		flex-shrink: 0
+		+nm
+			color: lighten($color-grey, 20%)
+
+		&::before
+			position: absolute
+			content: ''
+			width: 50px
+			height: 50px
+			top: -35px
+			left: 0
+			+png(demo)
+			background-color: #43d495
+			background-position: center
+			background-repeat: no-repeat
+			border-radius: 50%
+			box-shadow: 5px 5px 10px rgba(67, 212, 149, 0.3)
+
+	&:hover
+
+		.item-slot-btns
+			opacity: 1
+
+		.item-slot-icon
+
+			&::before
+				opacity: 1

@@ -1,0 +1,145 @@
+.btn
+	display: inline-block
+	padding: 14px 35px
+	font-size: 16px
+	font-weight: 700
+	line-height: 22px
+	text-transform: uppercase
+	text-align: center
+	text-decoration: none
+	border: 0
+	border-radius: 25px
+	transition: $transition
+	cursor: pointer
+	position: relative
+
+.btn-white
+	color: $color-blue
+	background-color: $color-white
+
+	&::before,
+	&::after
+		background: rgba($color-white, .1)
+
+.btn-blue
+	color: $color-white
+	background-color: $color-accent
+
+	&::before,
+	&::after
+		background: rgba($color-accent, .1)
+
+.btn-orange
+	color: $color-white
+	background-color: $color-orange
+
+	&::before,
+	&::after
+		background: rgba($color-orange, .1)
+
+.btn-white,
+.btn-blue,
+.btn-orange
+	margin: 10px
+	z-index: 1
+
+	&::before,
+	&::after
+		position: absolute
+		content: ''
+		border-radius: 30px
+		z-index: -1
+
+	&::before
+		border-radius: 45px
+		top: -10px
+		right: -10px
+		bottom: -10px
+		left: -10px
+		opacity: 0
+		transition: $transition
+
+	&::after
+		top: -10px
+		right: -10px
+		bottom: -10px
+		left: -10px
+		border-radius: 35px
+
+	&:hover,
+	&:focus,
+	&:active
+
+		&::before
+			top: -20px
+			right: -20px
+			bottom: -20px
+			left: -20px
+			opacity: 1
+
+.btn-border,
+.btn-site
+	width: 130px
+	line-height: 21px
+
+.btn-border
+	padding: 10px 20px
+	color: $color-text
+	background-color: $color-white
+	border: 2px solid $color-border
+	+nm
+		color: $color-white
+		background-color: $color-text
+
+.btn-site
+	padding: 12px 20px
+	color: $color-white
+	background-color: $color-orange
+
+.btn-more
+	padding: 7px 26px
+	color: $color-grey
+	font-size: 14px
+	text-transform: none
+	border: 2px solid $color-border
+	+nm
+		color: lighten($color-grey, 20%)
+
+.btn-big
+	padding: 15px 42px
+	+r(1259)
+		padding: 15px 30px
+
+.btn-fullwidth
+	width: 100%
+	text-align: center
+
+//#return-to-top
+//	position: fixed
+//	bottom: 20px
+//	left: calc(100% - 60px)
+//	width: 39px
+//	height: 73px
+//	opacity: 0.95
+//	background-color: rgba(#ff2424, .75)
+//	border-radius: 20px
+//	z-index: 5
+//	display: none
+//	transition: all 0.3s ease
+//
+//	span
+//		display: block
+//		margin: 0 auto
+//		position: relative
+//		width: 21px
+//		height: 15px
+//		top: 23px
+//		+png(btn-top)
+//		background-repeat: no-repeat
+//		transition: all 0.3s ease
+//
+//	&:hover
+//		background-color: #ff2424
+//
+//		span
+//			top: 13px

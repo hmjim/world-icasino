@@ -1,0 +1,395 @@
+.top-cas
+	counter-reset: cas
+
+	.top-cas-item
+		padding: 15px 0
+		display: flex
+		align-items: center
+		justify-content: space-between
+		background-color: $color-white
+		border: 2px solid $color-border
+		border-radius: $border-radius
+		+r(991)
+			flex-wrap: wrap
+
+		&:not(:last-child)
+			margin-bottom: 15px
+
+		&:nth-child(1),
+		&:nth-child(2),
+		&:nth-child(3)
+			border-color: $color-accent
+
+			.top-cas-item-label
+				color: $color-white
+				+png(label-green)
+
+				span
+					border: 2px solid #b4fddd
+					border-radius: 50%
+					margin: 0 0 10px
+
+			.top-cas-item-icon
+				color: $color-blue
+
+		&.top-cas-single
+			border-color: $color-green
+
+			.top-cas-item-pos
+				+r(767)
+					margin-right: 0
+
+			.top-cas-item-logo
+				+r(767)
+					padding-right: 80px
+					width: calc(100% - 80px)
+					text-align: center
+
+			.top-cas-item-features
+				justify-content: center
+				+r(767)
+					margin-bottom: 30px
+
+			.top-cas-item-bonus
+				display: flex
+				align-items: center
+				flex-grow: 0
+				+r(575)
+					padding-left: 0
+					flex-grow: 1
+					flex-direction: column
+				+r(500)
+					margin-bottom: 0
+
+			.top-cas-item-icon
+				color: $color-text
+				margin-right: 15px
+				+r(575)
+					margin-right: 0
+					margin-left: 15px
+
+			.top-cas-item-text
+				width: 260px
+				color: $color-grey
+				font-size: 18px
+				font-weight: 500
+				line-height: 22px
+				text-transform: uppercase
+				+r(500)
+					width: 100%
+					text-align: center
+
+			.top-cas-item-nav
+				text-align: center
+				+r(767)
+					width: 100%
+					padding: 0 15px
+					align-items: center
+					order: 4
+					margin-bottom: 0
+				+r(575)
+					flex-direction: column
+
+				.btn
+
+					+ .btn
+						+r(767)
+							margin-top: 0
+							margin-left: 15px
+
+			.btn
+				margin-bottom: 15px
+
+			.btn-light
+				color: #A7A7A7
+				font-size: 14px
+				line-height: 22px
+				text-transform: none
+				text-decoration-line: underline
+
+				&:hover
+					text-decoration: none
+
+	.top-cas-item-pos
+		width: 80px
+		padding: 0 15px
+		margin-right: 10px
+		position: relative
+		height: 100%
+		align-self: flex-start
+		flex-shrink: 0
+		+r(575)
+			margin-right: 0
+
+	.top-cas-item-label
+		position: absolute
+		width: 50px
+		height: 70px
+		top: -17px
+		left: 15px
+		display: flex
+		align-items: center
+		justify-content: center
+		+png(label-grey)
+
+		span
+			display: inline-block
+			width: 34px
+			height: 34px
+			font-size: 20px
+			font-weight: 500
+			line-height: 28px
+			text-align: center
+			margin: 0 0 5px
+			position: relative
+
+			&::before
+				position: absolute
+				counter-increment: cas
+				content: counter(cas)
+				left: 50%
+				transform: translateX(-50%)
+
+	.top-cas-item-logo
+		flex-shrink: 0
+		+r(991)
+			margin-bottom: 30px
+		+r(575)
+			padding-right: 80px
+			width: calc(100% - 80px)
+			text-align: center
+
+	.top-cas-item-features
+		padding: 0 80px
+		display: flex
+		justify-content: space-between
+		flex-grow: 1
+		+r(1259)
+			padding: 0 30px
+		+r(991)
+			width: 100%
+			order: 4
+		+r(575)
+			order: 3
+			margin-bottom: 30px
+		+r(500)
+			flex-direction: column
+			justify-content: flex-start
+			align-items: center
+
+	.top-cas-item-rating,
+	.top-cas-item-bonus,
+	.top-cas-item-slots
+		padding-left: 50px
+		flex-grow: 1
+
+	.top-cas-item-rating,
+	.top-cas-item-bonus
+		+r(500)
+			margin-bottom: 10px
+
+	.top-cas-item-icon
+		font-size: 35px
+		font-weight: 700
+		line-height: 49px
+		color: $color-text
+
+		&.icon-rating,
+		&.icon-bonus,
+		&.icon-slots
+			position: relative
+
+			&::before
+				position: absolute
+				content: ''
+				width: 40px
+				height: 40px
+				top: 0
+				left: -50px
+
+		&.icon-rating
+
+			&::before
+				+png(icon-rating)
+
+		&.icon-bonus
+
+			&::before
+				+png(icon-bonus)
+
+		&.icon-slots
+
+			&::before
+				+png(icon-slots)
+
+	.top-cas-item-text
+		font-size: 20px
+		line-height: 28px
+		color: $color-grey
+		width: 82px
+
+	.top-cas-item-nav
+		padding-right: 22px
+		display: flex
+		flex-direction: column
+		+r(991)
+			margin-bottom: 30px
+		+r(575)
+			width: 100%
+			padding: 0 15px
+			flex-direction: row
+			justify-content: center
+			order: 4
+			margin-bottom: 0
+
+		.btn
+
+			+ .btn
+				margin-top: 10px
+				+r(575)
+					margin-top: 0
+					margin-left: 15px
+
+
+.c-table
+	margin-bottom: 60px
+
+	.c-thead
+		+r(767)
+			display: none
+
+		.c-tr
+			padding: 17px 0
+			background-color: $color-dark
+			box-shadow: $box-shadow
+
+	.c-tbody
+
+		.c-tr
+			padding: 17px 0 13px
+			background-color: $color-white
+			box-shadow: $box-shadow
+			position: relative
+			+r(767)
+				padding: 0 0 20px
+
+		.c-td
+
+			&.c-pos,
+			&.c-logo,
+			&.c-rate,
+			&.c-bonus
+				border-right: $border
+				+r(767)
+					border: 0
+
+	.c-tr
+		display: flex
+		border-radius: $border-radius
+		margin-bottom: 6px
+		+r(767)
+			flex-direction: column
+			align-items: flex-end
+
+	.c-td
+		text-align: center
+		display: flex
+		align-items: center
+		justify-content: center
+		flex-shrink: 0
+		font-size: 17px
+		+r(767)
+			padding: 0 15px
+
+		&.c-pos
+			width: 6%
+			+r(1259)
+				width: 5%
+			+r(767)
+				width: 100%
+				margin-bottom: 20px
+				padding: 17px 0
+				background-color: $color-dark
+				border-radius: 5px 5px 0 0
+
+		&.c-logo
+			width: 28%
+			padding: 0 10px 0 30px
+			justify-content: flex-start
+			+r(1259)
+				width: 34%
+			+r(767)
+				width: 100%
+				padding: 0 15px
+				flex-direction: column
+				margin-bottom: 20px
+
+			.c-logo-img
+				margin-right: 26px
+				flex-shrink: 0
+				+r(991)
+					max-width: 80px
+				+r(767)
+					margin-right: 0
+					margin-bottom: 5px
+
+				img
+					border-radius: 50%
+
+			.c-logo-title
+				text-align: left
+				+r(767)
+					font-weight: 500
+
+		&.c-rate
+			width: 25%
+			padding: 0 50px
+			flex-direction: column
+			+r(1259)
+				width: 20%
+				padding: 0 20px
+			+r(767)
+				width: 100%
+				padding: 0 15px
+				margin-bottom: 15px
+
+			.c-rate-text
+				margin-bottom: 5px
+				+r(767)
+					font-size: 15px
+				+r(575)
+					font-size: 14px
+
+			.c-rate-title
+				display: none
+				+r(767)
+					display: inline-block
+
+			.c-rate-bar
+				width: 100%
+				height: 25px
+				border: 1px solid #8e8e8e
+				border-radius: 50px
+				position: relative
+				+r(767)
+					max-width: 260px
+
+			.c-rate-count
+				position: absolute
+				height: 100%
+				top: 0
+				left: 0
+				background-image: linear-gradient(90deg, #FFD700 2%, #FF8A00 96%)
+				border-radius: 50px
+
+		&.c-bonus
+			width: 17%
+			+r(1259)
+				width: 19%
+			+r(767)
+				width: 100%
+				margin-bottom: 15px
+
+		&.c-nav
+			width: 24%
+

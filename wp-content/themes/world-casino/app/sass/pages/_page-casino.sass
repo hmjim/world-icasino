@@ -1,0 +1,299 @@
+.top-cas
+	counter-reset: cas
+
+	.item-cas-wrap
+		width: 100%
+
+		&:not(:last-child)
+			margin-bottom: 15px
+
+		&:nth-child(1),
+		&:nth-child(2),
+		&:nth-child(3)
+
+			.item-cas
+				border-color: $color-accent
+				+nm
+					border-color: lighten($color-accent, 20%)
+
+				.item-cas-label
+					color: $color-white
+					+png(label-green)
+
+					span
+						border: 2px solid #b4fddd
+						border-radius: 50%
+						margin: 0 0 10px
+
+				.item-cas-icon
+					color: $color-blue
+					+nm
+						color: lighten($color-accent, 20%)
+
+	.item-cas
+		padding: 15px 0
+		display: flex
+		align-items: center
+		justify-content: space-between
+		background-color: $color-white
+		border: 2px solid $color-border
+		border-radius: $border-radius
+		+r(991)
+			flex-wrap: wrap
+		+nm
+			background-color: $lighten10
+			border-color: lighten($color-grey, 20%)
+
+		&.item-cas-single
+			border-color: $color-green
+
+			.item-cas-pos
+				+r(767)
+					margin-right: 0
+
+			.item-cas-logo
+				+r(767)
+					padding-right: 80px
+					width: calc(100% - 80px)
+					text-align: center
+
+			.item-cas-features
+				justify-content: center
+				+r(767)
+					margin-bottom: 30px
+
+			.item-cas-bonus
+				display: flex
+				align-items: center
+				flex-grow: 0
+				+r(575)
+					padding-left: 0
+					flex-grow: 1
+					flex-direction: column
+				+r(500)
+					margin-bottom: 0
+
+				.item-cas-icon
+					color: $color-text
+					margin-right: 15px
+					+r(575)
+						margin-right: 0
+						margin-left: 15px
+
+			.item-cas-text
+				width: 260px
+				color: $color-grey
+				font-size: 18px
+				font-weight: 500
+				line-height: 22px
+				text-transform: uppercase
+				+r(500)
+					width: 100%
+					text-align: center
+
+			.item-cas-nav
+				text-align: center
+				+r(767)
+					width: 100%
+					padding: 0 15px
+					align-items: center
+					order: 4
+					margin-bottom: 0
+				+r(575)
+					flex-direction: column
+
+				.btn
+
+					+ .btn
+						+r(767)
+							margin-top: 0
+							margin-left: 15px
+
+			.btn
+				margin-bottom: 15px
+
+			.btn-light
+				color: #A7A7A7
+				font-size: 14px
+				line-height: 22px
+				text-transform: none
+				text-decoration-line: underline
+
+				&:hover
+					text-decoration: none
+
+	.item-cas-pos
+		width: 80px
+		padding: 0 15px
+		margin-right: 10px
+		position: relative
+		height: 100%
+		align-self: flex-start
+		flex-shrink: 0
+		+r(575)
+			margin-right: 0
+
+	.item-cas-label
+		position: absolute
+		width: 50px
+		height: 70px
+		top: -17px
+		left: 15px
+		display: flex
+		align-items: center
+		justify-content: center
+		+png(label-grey)
+		+nm
+			color: $color-text
+
+		span
+			display: inline-block
+			width: 34px
+			height: 34px
+			font-size: 20px
+			font-weight: 500
+			line-height: 28px
+			text-align: center
+			margin: 0 0 5px
+			position: relative
+
+			&::before
+				position: absolute
+				counter-increment: cas
+				content: counter(cas)
+				left: 50%
+				transform: translateX(-50%)
+
+	.item-cas-logo
+		flex-shrink: 0
+		+r(991)
+			margin-bottom: 30px
+		+r(575)
+			padding-right: 80px
+			width: calc(100% - 80px)
+			text-align: center
+
+	.item-cas-features
+		padding: 0 80px
+		display: flex
+		justify-content: space-between
+		flex-grow: 1
+		+r(1259)
+			padding: 0 30px
+		+r(991)
+			width: 100%
+			order: 4
+		+r(575)
+			order: 3
+			margin-bottom: 30px
+		+r(500)
+			flex-direction: column
+			justify-content: flex-start
+			align-items: center
+
+	.item-cas-rating,
+	.item-cas-bonus,
+	.item-cas-slots
+		padding-left: 50px
+		flex-grow: 1
+
+	.item-cas-rating,
+	.item-cas-bonus
+		+r(500)
+			margin-bottom: 10px
+
+	.item-cas-icon
+		font-size: 35px
+		font-weight: 700
+		line-height: 49px
+		color: $color-text
+		+nm
+			color: $color-white
+
+		&.icon-rating,
+		&.icon-bonus,
+		&.icon-slots
+			position: relative
+
+			&::before
+				position: absolute
+				content: ''
+				width: 40px
+				height: 40px
+				top: 0
+				left: -50px
+
+		&.icon-rating
+
+			&::before
+				+png(icon-rating)
+
+		&.icon-bonus
+
+			&::before
+				+png(icon-bonus)
+
+		&.icon-slots
+
+			&::before
+				+png(icon-slots)
+
+	.item-cas-text
+		font-size: 20px
+		line-height: 28px
+		color: $color-grey
+		width: 82px
+		+nm
+			color: lighten($color-grey, 20%)
+
+	.item-cas-nav
+		padding-right: 22px
+		display: flex
+		flex-direction: column
+		+r(991)
+			margin-bottom: 30px
+		+r(575)
+			width: 100%
+			padding: 0 15px
+			flex-direction: row
+			justify-content: center
+			order: 4
+			margin-bottom: 0
+
+		.btn
+
+			+ .btn
+				margin-top: 10px
+				+r(575)
+					margin-top: 0
+					margin-left: 15px
+
+.top-cas-search
+
+	.item-cas
+		+r(1259)
+			flex-wrap: wrap
+
+	.item-cas-logo
+		+rmin(1260)
+			max-width: 169px
+		+r(1259)
+			margin-bottom: 30px
+
+	.item-cas-features
+		padding: 0 30px
+		+r(1259)
+			width: 100%
+			order: 4
+
+	.item-cas-icon
+		font-size: 30px
+
+	.item-cas-text
+		font-size: 18px
+
+	.item-cas-nav
+		+r(1259)
+			margin-bottom: 30px
+
+

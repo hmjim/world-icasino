@@ -1,0 +1,81 @@
+.section-anchor
+
+	.row
+		margin-left: 0
+		margin-right: 0
+
+.anchor-sidebar
+	width: calc(33.3333% - 10px)
+	position: relative
+	+r(991)
+		width: 100%
+		margin-bottom: 30px
+
+	.anchor-menu
+		padding: 30px 35px
+
+		ol
+			margin: 0
+			padding: 0
+			list-style-type: none
+			counter-reset: list
+
+			li
+				padding-left: 64px
+				position: relative
+
+				&:not(:last-child)
+					margin-bottom: 20px
+
+				&::before,
+				&::after
+					position: absolute
+
+				&::before
+					counter-increment: list
+					content: '0' counter(list)
+					left: 0
+					font-size: 26px
+					font-weight: 700
+					line-height: 26px
+
+				&::after
+					content: ''
+					width: 35px
+					height: 2px
+					top: 13px
+					left: 30px
+					background-color: #e6e6e6
+					transform: rotate(-70deg)
+
+			a
+				color: $color-text
+				text-decoration: none
+				+nm
+					color: $color-white
+
+				&:hover
+					color: $color-accent
+					+nm
+						color: lighten($color-accent, 20%)
+
+.anchor-content
+	width: calc(66.6667% - 20px)
+	margin-left: 30px
+	+r(991)
+		width: 100%
+		margin-left: 0
+
+	.anchor-section
+		padding: 30px
+
+.anchor-section
+	background-color: $color-white
+	border: 2px solid $color-border
+	border-radius: $border-radius
+	+nm
+		background-color: $lighten10
+		border-color: lighten($color-grey, 20%)
+
+	&:not(:last-child)
+		margin-bottom: 30px

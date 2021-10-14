@@ -1,0 +1,155 @@
+.menu
+	margin: 0
+	padding: 0
+	list-style-type: none
+	display: flex
+
+	li
+
+		&:not(:last-child)
+			margin-right: 10px
+
+		a
+			text-decoration: none
+
+.header-menu,
+.footer-menu
+	flex-grow: 1
+	display: flex
+	flex-wrap: wrap
+
+	.menu
+
+		li
+			margin: 0 23px
+			position: relative
+			+r(1259)
+				margin: 0 10px
+
+			&:not(:last-child)
+
+				&::before
+					position: absolute
+					content: ''
+					width: 35px
+					height: 2px
+					top: 13px
+					right: -40px
+					background-color: $color-border
+					transform: rotate(-70deg)
+					+r(1259)
+						display: none
+
+			a
+				display: inline-block
+				color: $color-text
+				font-size: 20px
+				line-height: 28px
+				text-transform: capitalize
+				+nm
+					color: $color-white
+
+				&:hover
+					color: $color-accent
+					+nm
+						color: lighten($color-accent, 20%)
+
+			&.current-menu-item
+
+				a
+
+.header-menu
+	justify-content: center
+	+r(991)
+		width: 100%
+		order: 5
+		height: 0
+		overflow: hidden
+		transition: $transition
+
+	.menu
+		+r(991)
+			flex-direction: column
+			align-items: center
+
+		li
+			+r(991)
+				margin: 5px 0
+
+	&.on
+		+r(991)
+			padding-top: 10px
+			height: auto
+
+.footer-menu
+	justify-content: flex-end
+
+	.menu
+		+r(767)
+			flex-direction: column
+			align-items: center
+
+		li
+			+r(767)
+				margin: 5px 0
+
+			&:not(:last-child)
+
+				&::before
+					background-color: $color-grey
+
+			a
+				color: $color-white
+
+.menu-toggle
+	display: none
+	width: 45px
+	height: 45px
+	position: relative
+	cursor: pointer
+	margin-left: 20px
+	background-color: $color-light
+	border: 2px solid $color-border
+	border-radius: 10px
+	+r(991)
+		display: block
+		order: 4
+	+r(575)
+		margin-left: 15px
+		width: 40px
+		height: 40px
+
+	&::before,
+	&::after
+		position: absolute
+		content: ''
+		height: 2px
+		left: 8px
+		top: 50%
+		background-color: $color-grey
+		transform: translateY(-50%)
+		transition: all .2s ease
+		+r(575)
+			left: 6px
+
+	&::before
+		width: 24px
+		margin-top: -3px
+
+	&::after
+		width: 16px
+		margin-top: 3px
+
+	&.on
+
+		&::before,
+		&::after
+			margin-top: 0
+
+		&::before
+			transform: translateY(-50%) rotate(45deg)
+
+		&::after
+			width: 24px
+			transform: translateY(-50%) rotate(-45deg)
+

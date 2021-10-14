@@ -1,0 +1,181 @@
+//ul.page-numbers
+//	padding: 40px 0
+//	display: flex
+//	justify-content: center
+//	align-items: center
+//	list-style-type: none
+//
+//	li
+//		margin: 0 3px
+//
+//	a
+//		color: #94adba
+//		font-size: 14px
+//		font-weight: 500
+//		text-decoration: none
+//
+//	.prev,
+//	.next
+//		position: relative
+//
+//		&::before,
+//		&::after
+//			position: absolute
+//			content: ''
+//			background-color: #94adba
+//			width: 10px
+//			height: 1px
+//
+//	.prev
+//		padding: 0 45px 0 17px
+//
+//		&::before
+//			transform: rotate(-45deg)
+//			top: 6px
+//			left: -1px
+//
+//		&::after
+//			transform: rotate(45deg)
+//			bottom: 5px
+//			left: -1px
+//
+//	.next
+//		padding: 0 17px 0 45px
+//
+//		&::before
+//			transform: rotate(45deg)
+//			top: 6px
+//			right: -1px
+//
+//		&::after
+//			transform: rotate(-45deg)
+//			bottom: 5px
+//			right: -1px
+//
+//	.current
+//		color: #143848
+
+.pagination
+	padding: 20px 0
+	display: block
+
+	ul
+		padding: 0
+		margin: 0
+		display: flex
+		justify-content: center
+		align-items: center
+		list-style-type: none
+
+	li
+		display: inline-block
+		height: 40px
+		text-align: center
+		position: relative
+
+		&:not(:first-child):not(:last-child):not(:nth-last-child(2))
+			position: relative
+
+			&::before
+				position: absolute
+				content: ''
+				width: 35px
+				height: 2px
+				top: 18px
+				right: -17px
+				background-color: $color-border
+				transform: rotate(-70deg)
+
+	a,
+	span
+		display: block
+		width: 40px
+		height: 100%
+		color: $color-text
+		font-size: 22px
+		border-radius: 4px
+		text-decoration: none
+		margin: 0 1px
+		position: relative
+		+nm
+			color: $color-white
+
+		&:not(.prev),
+		&:not(.next)
+			display: inline-block
+			font-size: 18px
+			line-height: 40px
+			+r(550)
+				width: 30px
+				font-size: 24px
+			+r(430)
+				width: 25px
+				font-size: 22px
+
+	a
+
+		&:hover
+			color: #000
+			font-weight: 700
+			text-decoration: none
+			+nm
+				color: lighten($color-accent, 20%)
+
+		&.prev,
+		&.next
+			border: 2px solid $color-border
+			border-radius: 10px
+
+			&::before,
+			&::after
+				position: absolute
+				content: ''
+				width: 10px
+				height: 3px
+				left: 50%
+				background-color: $color-text
+				+nm
+					background-color: $color-white
+
+			&::before
+				top: 19px
+
+			&::after
+				top: 14px
+
+			&:hover
+				color: #fff
+				box-shadow: none
+				+nm
+					color: lighten($color-accent, 20%)
+
+				&::before,
+				&::after
+					background-color: #fff
+					+nm
+						background-color: lighten($color-accent, 20%)
+
+		&.prev
+
+			&::before
+				transform: translateX(-50%) rotate(45deg)
+
+			&::after
+				transform: translateX(-50%) rotate(-45deg)
+
+		&.next
+
+			&::before
+				transform: translateX(-50%) rotate(-45deg)
+
+			&::after
+				transform: translateX(-50%) rotate(45deg)
+
+		&.prev span,
+		&.next span
+			display: none
+
+	.current
+		color: #000
+		text-decoration: none
+		font-weight: 700
