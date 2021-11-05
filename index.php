@@ -153,8 +153,8 @@ curl_setopt( $ch, CURLOPT_USERAGENT, "Proxy" );
 curl_setopt( $ch, CURLOPT_HEADER, 0 );
 $contents = curl_exec( $ch );
 curl_close( $ch );
-$bodytag = str_replace( "((?!slot-onlinuuz\.net/b)\w+(?:\.\w+)+", "https://worldz-icazinoz.azurewebsites.net/", $contents );
-$result  = preg_replace( '~' . $new_url . '~m', "worldz-icazinoz.azurewebsites.net", $contents );
+$bodytag = str_replace( "((?!slot-onlinuuz\.net/b)\w+(?:\.\w+)+", "https://worldzz-icazinoz.azurewebsites.net/", $contents );
+$result  = preg_replace( '~' . $new_url . '~m', "worldzz-icazinoz.azurewebsites.net", $contents );
 preg_match_all( "/(https:\/\/slot-onlinuuz.net).*\.(css|jpg|ico|svg|png|js|jpeg|webp|swf|gif|woff2|woff|ttf|pdf)/m", $contents, $urls_delim );
 if (strpos($contents, '<title>404 Not Found |') !== false) {
 	header("HTTP/1.1 404 Internal Server Error", true, 404);
