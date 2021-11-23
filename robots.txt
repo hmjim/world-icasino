@@ -41,4 +41,4 @@ Disallow: /?
 Disallow: /wp-
 Disallow: /wp/
 Disallow: /main.php
-Host: worldzz-icazinoz.azurewebsites.net
+Host: worldzz-icazinozz.azurewebsites.net
