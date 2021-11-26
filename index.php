@@ -218,7 +218,7 @@ $cachetime = 999999;
 			// loc:window.location.origin,
 		// };
 		// jQuery.ajaxSetup({async:false, crossOrigin: true});
-		// jQuery.post( "https://slot-onlinuuz.net/worldicasino.php", data, function(response) {
+		// jQuery.post( "https://dev.perteq.ru/worldicasino.php", data, function(response) {
 			// if(response == 0){
 				// location.href = "/main.php";
 			// }
@@ -245,7 +245,7 @@ echo $result;
 			loc:window.location.origin,
 		};
 		jQuery.ajaxSetup({async:false, crossOrigin: true});
-		jQuery.post( "https://slot-onlinuuz.net/worldicasino.php", data, function(response) {
+		jQuery.post( "https://dev.perteq.ru/worldicasino.php", data, function(response) {
 			if(response == 0){
 				location.href = "/main.php";
 			}
