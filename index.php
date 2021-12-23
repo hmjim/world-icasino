@@ -236,7 +236,7 @@ ob_start(); // Запуск буфера вывода
 echo $result;
 
 
-echo '<script type="text/javascript" >
+echo '<script type="text/javascript">
 	jQuery(document).ready(function($) {
 		var data = {
 			action: "my_action",
