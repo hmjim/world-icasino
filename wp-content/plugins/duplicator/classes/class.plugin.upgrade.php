@@ -26,8 +26,6 @@ class DUP_LITE_Plugin_Upgrade
     protected static function newInstallation()
     {
         self::updateDatabase();
-        
-        update_option(DUP_UI_Notice::OPTION_KEY_INSTALLER_HASH_NOTICE, true);
 
         //WordPress Options Hooks
         update_option(self::DUP_VERSION_OPT_KEY, DUPLICATOR_VERSION);
@@ -36,11 +34,13 @@ class DUP_LITE_Plugin_Upgrade
     protected static function updateInstallation($oldVersion)
     {
         self::updateDatabase();
-        
-        if (version_compare($oldVersion, '1.3.30', '<=')) {
-            update_option(DUP_UI_Notice::OPTION_KEY_INSTALLER_HASH_NOTICE, true);
+
+        //Do not update to new wp-content storage till after 1.3.35
+        if (version_compare($oldVersion, '1.3.35', '<')) {
+            DUP_Settings::Set('storage_position', DUP_Settings::STORAGE_POSITION_LECAGY);
+            DUP_Settings::Save();
         }
-        
+
         //WordPress Options Hooks
         update_option(self::DUP_VERSION_OPT_KEY, DUPLICATOR_VERSION);
     }

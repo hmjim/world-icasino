@@ -86,6 +86,7 @@ VIEW: STEP 3- INPUT -->
 		<input type="hidden" name="view"		  value="step3" />
 		<input type="hidden" name="csrf_token" value="<?php echo DUPX_CSRF::generate('step3'); ?>">
 		<input type="hidden" name="secure-pass"   value="<?php echo DUPX_U::esc_attr($_POST['secure-pass']); ?>" />
+		<input type="hidden" name="secure-archive" value="<?php echo DUPX_U::esc_attr($_POST['secure-archive']); ?>" />
 		<input type="hidden" name="logging"		  value="<?php echo DUPX_U::esc_attr($_POST['logging']); ?>" />
 		<input type="hidden" name="dbhost"		  value="<?php echo DUPX_U::esc_attr($_POST['dbhost']); ?>" />
 		<input type="hidden" name="dbuser" 		  value="<?php echo DUPX_U::esc_attr($_POST['dbuser']); ?>" />
@@ -120,7 +121,7 @@ VIEW: STEP 3- INPUT -->
             </tr>
         </table>
     </div>
-    <br/><br/>
+    <br/>
 
     <!-- =========================
     SEARCH AND REPLACE -->
@@ -136,7 +137,7 @@ VIEW: STEP 3- INPUT -->
 		This option is available only in
 		<a href="https://snapcreek.com/duplicator/?utm_source=duplicator_free&utm_medium=wordpress_plugin&utm_campaign=duplicator_pro&utm_content=free_inst_replaceopts">Duplicator Pro</a>
     </div>
-    <br/><br/>
+    <br/>
     
 	<!-- ==========================
     OPTIONS -->
@@ -297,7 +298,7 @@ VIEW: STEP 3- INPUT -->
 			$wpconfig_ark_path	= ($GLOBALS['DUPX_AC']->installSiteOverwriteOn) ? "{$root_path}/dup-wp-config-arc__{$GLOBALS['DUPX_AC']->package_hash}.txt" : "{$root_path}/wp-config.php";
 
             if (file_exists($wpconfig_ark_path)) {
-				$config_transformer = new WPConfigTransformer($wpconfig_ark_path);
+				$config_transformer = new DupLiteWPConfigTransformer($wpconfig_ark_path);
             } else {
                 $config_transformer = null;
             }
@@ -383,6 +384,7 @@ VIEW: STEP 3 - AJAX RESULT  -->
 		<input type="hidden" name="view"  value="step4" />
 		<input type="hidden" name="csrf_token" value="<?php echo DUPX_CSRF::generate('step4'); ?>">
 		<input type="hidden" name="secure-pass" value="<?php echo DUPX_U::esc_attr($_POST['secure-pass']); ?>" />
+		<input type="hidden" name="secure-archive" value="<?php echo DUPX_U::esc_attr($_POST['secure-archive']); ?>" />
 		<input type="hidden" name="logging" id="logging" value="<?php echo DUPX_U::esc_attr($_POST['logging']); ?>" />
 		<input type="hidden" name="url_new" id="ajax-url_new"  />
 		<input type="hidden" name="exe_safe_mode" id="ajax-exe-safe-mode" />
@@ -511,7 +513,7 @@ DUPX.runUpdate = function()
 				$("#ajax-url_new").val($("#url_new").val());
 				$("#ajax-exe-safe-mode").val($("#exe-safe-mode").val());
 				$("#ajax-json").val(escape(JSON.stringify(data)));
-				<?php if (! $GLOBALS['DUPX_DEBUG']) : ?>
+				<?php if (!DUPX_Log::isLevel(DUPX_Log::LV_DEBUG)) : ?>
 					setTimeout(function(){$('#s3-result-form').submit();}, 1000);
 				<?php endif; ?>
 				$('#progress-area').fadeOut(1800);
@@ -599,7 +601,7 @@ $(document).ready(function()
 	$("#tabs").tabs();
 	DUPX.getNewURL('url_new');
 	DUPX.getNewURL('siteurl');
-	$("*[data-type='toggle']").click(DUPX.toggleClick);
+	DUPX.initToggle();
 	$("#wp_password").passStrength({
 			shortPass: 		"top_shortPass",
 			badPass:		"top_badPass",

@@ -550,6 +550,54 @@ class DUPX_Bootstrap
 
 		return $retVal;
 	}
+    
+        /**
+     * Fetches current URL via php
+     *
+     * @param bool $queryString If true the query string will also be returned.
+     * @param int $getParentDirLevel if 0 get current script name or parent folder, if 1 parent folder if 2 parent of parent folder ... 
+     *
+     * @returns The current page url
+     */
+    public static function getCurrentUrl($queryString = true, $requestUri = false, $getParentDirLevel = 0)
+    {
+        // *** HOST
+        if (isset($_SERVER['HTTP_X_ORIGINAL_HOST'])) {
+            $host = $_SERVER['HTTP_X_ORIGINAL_HOST'];
+        } else {
+            $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME']; //WAS SERVER_NAME and caused problems on some boxes
+        }
+
+        // *** PROTOCOL
+        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            $_SERVER ['HTTPS'] = 'on';
+        }
+        if (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] === 'https') {
+            $_SERVER ['HTTPS'] = 'on';
+        }
+        if (isset($_SERVER['HTTP_CF_VISITOR'])) {
+            $visitor = json_decode($_SERVER['HTTP_CF_VISITOR']);
+            if ($visitor->scheme == 'https') {
+                $_SERVER ['HTTPS'] = 'on';
+            }
+        }
+        $protocol = 'http'.((isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on') ? 's' : '');
+
+        if ($requestUri) {
+            $serverUrlSelf = preg_replace('/\?.*$/', '', $_SERVER['REQUEST_URI']);
+        } else {
+            // *** SCRIPT NAME
+            $serverUrlSelf = $_SERVER['SCRIPT_NAME'];
+            for ($i = 0; $i < $getParentDirLevel; $i++) {
+                $serverUrlSelf = preg_match('/^[\\\\\/]?$/', dirname($serverUrlSelf)) ? '' : dirname($serverUrlSelf);
+            }
+        }
+
+        // *** QUERY STRING 
+        $query = ($queryString && isset($_SERVER['QUERY_STRING']) && strlen($_SERVER['QUERY_STRING']) > 0 ) ? '?'.$_SERVER['QUERY_STRING'] : '';
+
+        return $protocol.'://'.$host.$serverUrlSelf.$query;
+    }
 
 	/**
      *  Attempts to set the 'dup-installer' directory permissions
@@ -602,15 +650,13 @@ class DUPX_Bootstrap
      * @return bool		Returns true if the permission was properly set
      */
 	private function setPermsOnItem($path, $perms)
-	{
-		$result = self::chmod($path, $perms);
-		$perms_display = decoct($perms);
-		if ($result === false) {
-			self::log("ERROR: Couldn't set permissions of $path to {$perms_display}<br/>");
-		} else {
-			self::log("Set permissions of $path to {$perms_display}<br/>");
-		}
-		return $result;
+	{        
+        if (($result = self::chmod($path, $perms)) === false) {
+            self::log("ERROR: Couldn't set permissions of $path<br/>");
+        } else {
+            self::log("Set permissions of $path<br/>");
+        }
+        return $result;
 	}
 
     /**
@@ -657,7 +703,7 @@ class DUPX_Bootstrap
 	{
         static $logfile = null;
         if (is_null($logfile)) {
-            $logfile = dirname(__FILE__).'/dup-installer-bootlog__'.self::SECONDARY_PACKAGE_HASH.'.txt';
+            $logfile = self::getBootLogFilePath();
         }
         if ($deleteOld && file_exists($logfile)) {
             @unlink($logfile);
@@ -665,6 +711,15 @@ class DUPX_Bootstrap
         $timestamp = date('M j H:i:s');
 		return @file_put_contents($logfile, '['.$timestamp.'] '.self::postprocessLog($s)."\n", FILE_APPEND);
 	}
+    
+    /**
+     * get boot log file name the dup-installer-bootlog__[HASH].txt file
+     *
+     * @return string 
+     */
+    public static function getBootLogFilePath() {
+        return dirname(__FILE__).'/dup-installer-bootlog__'.self::SECONDARY_PACKAGE_HASH.'.txt';
+    }
     
     protected static function postprocessLog($str) {
         return str_replace(array(
@@ -1163,16 +1218,24 @@ class DUPX_Bootstrap
 		$cmds = array('shell_exec', 'escapeshellarg', 'escapeshellcmd', 'extension_loaded');
 
 		//Function disabled at server level
-		if (array_intersect($cmds, array_map('trim', explode(',', @ini_get('disable_functions'))))) return false;
+		if (array_intersect($cmds, array_map('trim', explode(',', @ini_get('disable_functions')))))
+            return false;
 
 		//Suhosin: http://www.hardened-php.net/suhosin/
 		//Will cause PHP to silently fail
 		if (extension_loaded('suhosin')) {
 			$suhosin_ini = @ini_get("suhosin.executor.func.blacklist");
-			if (array_intersect($cmds, array_map('trim', explode(',', $suhosin_ini)))) return false;
+			if (array_intersect($cmds, array_map('trim', explode(',', $suhosin_ini))))
+                return false;
 		}
+
+        if (! function_exists('shell_exec')) {
+			return false;
+	    }
+
 		// Can we issue a simple echo command?
-		if (!@shell_exec('echo duplicator')) return false;
+		if (!@shell_exec('echo duplicator'))
+            return false;
 
 		return true;
 	}
@@ -1349,17 +1412,17 @@ class DUPX_Handler
      *
      * @var bool
      */
-    private static $inizialized = false;
+    private static $initialized = false;
     
     /**
      * This function only initializes the error handler the first time it is called
      */
     public static function init_error_handler()
     {
-        if (!self::$inizialized) {
+        if (!self::$initialized) {
             @set_error_handler(array(__CLASS__, 'error'));
             @register_shutdown_function(array(__CLASS__, 'shutdown'));
-            self::$inizialized = true;
+            self::$initialized = true;
         }
     }
     
@@ -1378,7 +1441,7 @@ class DUPX_Handler
             case E_ERROR :
                 $log_message = self::getMessage($errno, $errstr, $errfile, $errline);
                 if (DUPX_Bootstrap::log($log_message) === false) {
-                    $log_message = "Can\'t wrinte logfile\n\n".$log_message;
+                    $log_message = "Can\'t write logfile\n\n".$log_message;
                 }
                 die('<pre>'.htmlspecialchars($log_message).'</pre>');
                 break;
@@ -1567,7 +1630,7 @@ class DUPX_CSRF {
 
 	/**
 	 * Get all CSRF vars in array format
-	 * 
+	 *
 	 * @return array Key as CSRF name and value as CSRF value
 	 */
 	private static function getCSRFVars() {
@@ -1575,6 +1638,9 @@ class DUPX_CSRF {
 			$filePath = self::getFilePath();
 			if (file_exists($filePath)) {
 				$contents = file_get_contents($filePath);
+				if (!($contents = file_get_contents($filePath))) {
+					throw new Exception('Fail to read the CSRF file.');
+				}
 				if (empty($contents)) {
 					self::$CSRFVars = array();
 				} else {
@@ -1599,7 +1665,9 @@ class DUPX_CSRF {
 	private static function saveCSRFVars($CSRFVars) {
 		$contents = json_encode($CSRFVars);
 		$filePath = self::getFilePath();
-		file_put_contents($filePath, $contents);
+		if (!file_put_contents($filePath, $contents, LOCK_EX)) {
+			throw new Exception('Fail to write the CSRF file.');
+		}
 	}
 }
 
@@ -1607,16 +1675,22 @@ try {
     $boot  = new DUPX_Bootstrap();
     $boot_error = $boot->run();
     $auto_refresh = isset($_POST['auto-fresh']) ? true : false;
+
+	if ($boot_error == null) {
+		$step1_csrf_token = DUPX_CSRF::generate('step1');
+		DUPX_CSRF::setKeyVal('archive', $boot->archive);
+		DUPX_CSRF::setKeyVal('bootloader', $boot->bootloader);
+		DUPX_CSRF::setKeyVal('secondaryHash', DUPX_Bootstrap::SECONDARY_PACKAGE_HASH);
+		DUPX_CSRF::setKeyVal('installerOrigCall', DUPX_Bootstrap::getCurrentUrl());
+		DUPX_CSRF::setKeyVal('installerOrigPath', __FILE__);
+		DUPX_CSRF::setKeyVal('booturl', '//'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+		DUPX_CSRF::setKeyVal('bootLogFile', DUPX_Bootstrap::getBootLogFilePath());
+		DUPX_CSRF::setKeyVal('package_hash', DUPX_Bootstrap::PACKAGE_HASH);
+	}
 } catch (Exception $e) {
    $boot_error = $e->getMessage();
 }
 
-if ($boot_error == null) {
-	$step1_csrf_token = DUPX_CSRF::generate('step1');
-	DUPX_CSRF::setKeyVal('archive', $boot->archive);
-	DUPX_CSRF::setKeyVal('bootloader', $boot->bootloader);
-    DUPX_CSRF::setKeyVal('secondaryHash', DUPX_Bootstrap::SECONDARY_PACKAGE_HASH);
-}
 ?>
 
 <html>

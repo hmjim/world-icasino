@@ -41,11 +41,11 @@ try {
     if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
         $_SERVER ['HTTPS'] = 'on';
     }
-    $serverDomain  = 'http'.((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 's' : '').'://'.$host;
+    $serverDomain  = 'http'.((isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on') ? 's' : '').'://'.$host;
     $serverUrlSelf = preg_match('/^[\\\\\/]?$/', dirname($_SERVER['SCRIPT_NAME'])) ? '' : dirname($_SERVER['SCRIPT_NAME']);
 
-    $GLOBALS['DUPX_INIT']     = str_replace('\\', '/', dirname(__FILE__));
     $GLOBALS['DUPX_INIT_URL'] = $serverDomain.$serverUrlSelf;
+    $GLOBALS['DUPX_INIT']     = str_replace('\\', '/', dirname(__FILE__));
     $GLOBALS['DUPX_ROOT']     = preg_match('/^[\\\\\/]?$/', dirname($GLOBALS['DUPX_INIT'])) ? '/' : dirname($GLOBALS['DUPX_INIT']);
     $GLOBALS['DUPX_ROOT_URL'] = $serverDomain.(preg_match('/^[\\\\\/]?$/', dirname($serverUrlSelf)) ? '' : dirname($serverUrlSelf));
 
@@ -56,8 +56,9 @@ try {
      * init constants and include
      */
     DUPX_Boot::init();
-    DUPX_Boot::initArchiveAndLog();
+    DUPX_Log::setThrowExceptionOnError(true);
 
+    // DUPX_Boot::initArchiveAndLog();
     require_once($GLOBALS['DUPX_INIT'].'/classes/class.installer.state.php');
     require_once($GLOBALS['DUPX_INIT'].'/classes/class.password.php');
     require_once($GLOBALS['DUPX_INIT'].'/classes/class.db.php');
@@ -77,7 +78,7 @@ try {
 
     // ?view=help
     if (!empty($_GET['view']) && 'help' == $_GET['view']) {
-
+        $GLOBALS['VIEW'] = 'help';
     } else if (isset($_GET['is_daws']) && 1 == $_GET['is_daws']) { // For daws action
         $post_ctrl_csrf_token = isset($_GET['daws_csrf_token']) ? DUPX_U::sanitize_text_field($_GET['daws_csrf_token']) : '';
         if (DUPX_CSRF::check($post_ctrl_csrf_token, 'daws')) {
@@ -157,13 +158,8 @@ try {
     }
 
     //Password Check
-    $_POST['secure-pass'] = isset($_POST['secure-pass']) ? $_POST['secure-pass'] : '';
-    if ($GLOBALS['DUPX_AC']->secure_on && $GLOBALS['VIEW'] != 'help') {
-        $pass_hasher = new DUPX_PasswordHash(8, FALSE);
-        $pass_check  = $pass_hasher->CheckPassword(base64_encode($_POST['secure-pass']), $GLOBALS['DUPX_AC']->secure_pass);
-        if (! $pass_check) {
-            $GLOBALS['VIEW'] = 'secure';
-        }
+    if ($GLOBALS['VIEW'] !== 'help' && !DUPX_Security::getInstance()->securityCheck()) {
+        $GLOBALS['VIEW'] = 'secure';
     }
 
     // Constants which are dependent on the $GLOBALS['DUPX_AC']
@@ -200,9 +196,9 @@ try {
         );
 
         if (in_array($post_view, $csrf_views)) {
-            if (isset($_POST['csrf_token']) && !DUPX_CSRF::check($_POST['csrf_token'], $post_view)) {
-                DUPX_Log::error("An invalid request was made to '{$post_view}'.  In order to protect this request from unauthorized access please "
-                . "<a href='../{$GLOBALS['BOOTLOADER_NAME']}'>restart this install process</a>.");
+            if (!isset($_POST['csrf_token']) || !DUPX_CSRF::check($_POST['csrf_token'], $post_view)) {
+               require_once($GLOBALS['DUPX_INIT']."/views/view.security.error.php");
+               die();
             }
         }
     }
@@ -225,16 +221,12 @@ try {
         $post_ctrl_csrf_token = isset($_POST['ctrl_csrf_token']) ? $_POST['ctrl_csrf_token'] : '';
         $post_ctrl_action = DUPX_U::sanitize_text_field($_POST['ctrl_action']);
         if (!DUPX_CSRF::check($post_ctrl_csrf_token, $post_ctrl_action)) {
-            DUPX_Log::error("An invalid request was made to '{$post_ctrl_action}'.  In order to protect this request from unauthorized access please "
-                . "<a href='../{$GLOBALS['BOOTLOADER_NAME']}'>restart this install process</a>.");
+            require_once($GLOBALS['DUPX_INIT']."/views/view.security.error.php");
+            die();
         }
         //PASSWORD CHECK
-        if ($GLOBALS['DUPX_AC']->secure_on) {
-            $pass_hasher = new DUPX_PasswordHash(8, FALSE);
-            $pass_check  = $pass_hasher->CheckPassword(base64_encode($_POST['secure-pass']), $GLOBALS['DUPX_AC']->secure_pass);
-            if (! $pass_check) {
-                DUPX_Log::error("Unauthorized Access:  Please provide a password!");
-            }
+        if (!DUPX_Security::getInstance()->securityCheck()) {
+            DUPX_Log::error("Unauthorized Access:  Please provide a password!");
         }
 
         // the controllers must die in case of error
@@ -263,6 +255,8 @@ try {
     }
 } catch (Exception $e) {
     $exceptionError = $e;
+} catch (Error $e) {
+    $exceptionError = $e;
 }
 
 /**
@@ -274,6 +268,15 @@ if (!empty($unespectOutput)) {
     DUPX_Log::info('ERROR: Unespect output '.DUPX_Log::varToString($unespectOutput));
     $exceptionError = new Exception('Unespected output '.DUPX_Log::varToString($unespectOutput));
 }
+
+if ($exceptionError != false) {
+    $GLOBALS["VIEW"] = 'exception';
+    echo '<pre>'.$exceptionError->getMessage()."\n";
+    echo "\tFILE:".$exceptionError->getFile().'['.$exceptionError->getLIne().']'."\n";
+    echo "\tTRACE:\n".$exceptionError->getTraceAsString()."</pre>";
+    die;
+}
+
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -286,7 +289,7 @@ if (!empty($unespectOutput)) {
     <link rel="icon" type="image/png" sizes="32x32" href="favicon/lite01_favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon/lite01_favicon-16x16.png">
     <link rel="manifest" href="favicon/site.webmanifest">
-    <link rel="mask-icon" href="favicon/lite01_safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="mask-icon" href="favicon/lite01_safari-pinned-tab.svg">
     <link rel="shortcut icon" href="favicon/lite01_favicon.ico">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="msapplication-config" content="favicon/browserconfig.xml">
@@ -331,7 +334,7 @@ if (!empty($unespectOutput)) {
 
 		if ($GLOBALS['DUPX_AC']->installSiteOverwriteOn) {
 			echo  ($GLOBALS['DUPX_STATE']->mode === DUPX_InstallerMode::OverwriteInstall)
-				? "<span class='dupx-overwrite'>Mode: Overwrite Install {$db_only_txt}</span>"
+				? "<span class='dupx-overwrite'>Mode: Overwrite Install (Beta) {$db_only_txt}</span>"
 				: "Mode: Standard Install {$db_only_txt}";
 		} else {
 			echo "Mode: Standard Install {$db_only_txt}";
@@ -397,10 +400,7 @@ FORM DATA: User-Interface views -->
 
         /** flush view output **/
         ob_end_flush();
-        
-    }
-
-    if ($exceptionError !== false) {
+    } else {
         DUPX_Log::info("--------------------------------------");
         DUPX_Log::info('EXCEPTION: '.$exceptionError->getMessage());
         DUPX_Log::info('TRACE:');
@@ -424,7 +424,7 @@ FORM DATA: User-Interface views -->
 			$ini_path 		= php_ini_loaded_file();
 			$ini_max_time 	= ini_get('max_execution_time');
 			$ini_memory 	= ini_get('memory_limit');
-			$ini_error_path = ini_get('error_log');
+			$ini_error_path = DUPX_CTRL::renderPostProcessings(ini_get('error_log'));
 		?>
          <div class="hdr">SERVER DETAILS</div>
 		<label>Web Server:</label>  			<?php echo DUPX_U::esc_html($_SERVER['SERVER_SOFTWARE']); ?><br/>
@@ -474,7 +474,7 @@ $(document).ready(function ()
 </script>
 
 
-<?php if ($GLOBALS['DUPX_DEBUG']) :?>
+<?php if (DUPX_Log::isLevel(DUPX_Log::LV_DEBUG)) :?>
 <form id="form-debug" method="post" action="?debug=1" autocomplete="off" >
 		<input id="debug-view" type="hidden" name="view" />
 		<br/><hr size="1" />

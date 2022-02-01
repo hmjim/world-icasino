@@ -88,6 +88,11 @@ class DUP_DatabaseInfo
     public $tableWiseRowCounts;
 
     /**
+     * @var array List of triggers included in the database
+     */
+    public $triggerList = array();
+
+    /**
      * Integer field file structure of table, table name as key
      */
     private $intFieldsStruct = array();
@@ -103,11 +108,27 @@ class DUP_DatabaseInfo
         $this->collationList      = array();
         $this->tableWiseRowCounts = array();
     }
+
+    public function addTriggers()
+    {
+        global $wpdb;
+
+        if (!is_array($triggers = $wpdb->get_results("SHOW TRIGGERS", ARRAY_A))) {
+            return;
+        }
+
+        foreach ($triggers as $trigger) {
+            $name   = $trigger["Trigger"];
+            $create = $wpdb->get_row("SHOW CREATE TRIGGER `{$name}`", ARRAY_N);
+            $this->triggerList[$name] = array(
+                "create" => "DELIMITER ;;\n".$create[2].";;\nDELIMITER ;"
+            );
+        }
+    }
 }
 
 class DUP_Database
 {
-
     //PUBLIC
     public $Type = 'MySQL';
     public $Size;
@@ -127,7 +148,7 @@ class DUP_Database
     //PROTECTED
     protected $Package;
     //PRIVATE
-    private $dbStorePath;
+    private $tempDbPath;
     private $EOFMarker;
     private $networkFlush;
 
@@ -158,9 +179,9 @@ class DUP_Database
             $this->Package = $package;
             do_action('duplicator_lite_build_database_before_start', $package);
 
-            $time_start        = DUP_Util::getMicrotime();
+            $time_start       = DUP_Util::getMicrotime();
             $this->Package->setStatus(DUP_PackageStatus::DBSTART);
-            $this->dbStorePath = "{$this->Package->StorePath}/{$this->File}";
+            $this->tempDbPath = DUP_Settings::getSsdirTmpPath()."/{$this->File}";
 
             $package_mysqldump        = DUP_Settings::Get('package_mysqldump');
             $package_phpdump_qrylimit = DUP_Settings::Get('package_phpdump_qrylimit');
@@ -196,7 +217,7 @@ class DUP_Database
             $time_sum = DUP_Util::elapsedTime($time_end, $time_start);
 
             //File below 10k considered incomplete
-            $sql_file_size = filesize($this->dbStorePath);
+            $sql_file_size = is_file($this->tempDbPath) ? @filesize($this->tempDbPath) : 0;
             DUP_Log::Info("SQL FILE SIZE: ".DUP_Util::byteSize($sql_file_size)." ({$sql_file_size})");
 
             if ($sql_file_size < 1350) {
@@ -204,7 +225,7 @@ class DUP_Database
                 $package->BuildProgress->set_failed($error_message);
                 $package->Status = DUP_PackageStatus::ERROR;
                 $package->Update();
-                DUP_Log::Error($error_message, "File does not look complete.  Check permission on file and parent directory at [{$this->dbStorePath}]", $errorBehavior);
+                DUP_Log::error($error_message, "File does not look complete.  Check permission on file and parent directory at [{$this->tempDbPath}]", $errorBehavior);
                 do_action('duplicator_lite_build_database_fail', $package);
             } else {
                 do_action('duplicator_lite_build_database_completed', $package);
@@ -213,13 +234,13 @@ class DUP_Database
             DUP_Log::Info("SQL FILE TIME: ".date("Y-m-d H:i:s"));
             DUP_Log::Info("SQL RUNTIME: {$time_sum}");
 
-            $this->Size = @filesize($this->dbStorePath);
+            $this->Size = is_file($this->tempDbPath) ? @filesize($this->tempDbPath) : 0;
 
             $this->Package->setStatus(DUP_PackageStatus::DBDONE);
         }
         catch (Exception $e) {
             do_action('duplicator_lite_build_database_fail', $package);
-            DUP_Log::Error("Runtime error in DUP_Database::Build", "Exception: {$e}", $errorBehavior);
+            DUP_Log::error("Runtime error in DUP_Database::Build. ".$e->getMessage(), "Exception: {$e}", $errorBehavior);
         }
     }
 
@@ -298,6 +319,9 @@ class DUP_Database
             }
         }
 
+        $this->setInfoObj();
+        $this->info->addTriggers();
+
         $info['Status']['DB_Case'] = preg_match('/[A-Z]/', $wpdb->dbname) ? 'Warn' : 'Good';
         $info['Status']['DB_Rows'] = ($info['Rows'] > DUPLICATOR_SCAN_DB_ALL_ROWS) ? 'Warn' : 'Good';
         $info['Status']['DB_Size'] = ($info['Size'] > DUPLICATOR_SCAN_DB_ALL_SIZE) ? 'Warn' : 'Good';
@@ -305,6 +329,7 @@ class DUP_Database
         $info['Status']['TBL_Case'] = ($tblCaseFound) ? 'Warn' : 'Good';
         $info['Status']['TBL_Rows'] = ($tblRowsFound) ? 'Warn' : 'Good';
         $info['Status']['TBL_Size'] = ($tblSizeFound) ? 'Warn' : 'Good';
+        $info['Status']['Triggers'] = count($this->info->triggerList) > 0 ? 'Warn' : 'Good';
 
         $info['RawSize']    = $info['Size'];
         $info['Size']       = DUP_Util::byteSize($info['Size']) or "unknown";
@@ -312,7 +337,6 @@ class DUP_Database
         $info['TableList']  = $info['TableList'] or "unknown";
         $info['TableCount'] = $tblCount;
 
-        $this->setInfoObj();
         $this->info->isTablesUpperCase = $tblCaseFound;
         $this->info->tablesBaseCount   = $tblBaseCount;
         $this->info->tablesFinalCount  = $tblCount;
@@ -378,7 +402,9 @@ class DUP_Database
         $cmd .= ' --quote-names';
         $cmd .= ' --skip-comments';
         $cmd .= ' --skip-set-charset';
+        $cmd .= ' --skip-triggers';
         $cmd .= ' --allow-keywords';
+        $cmd .= ' --no-tablespaces';
 
         //Compatibility mode
         if ($mysqlcompat_on) {
@@ -430,7 +456,7 @@ class DUP_Database
         $isPopenEnabled = DUP_Shell_U::isPopenEnabled();
 
         if (!$isPopenEnabled) {
-            $cmd .= ' -r '.escapeshellarg($this->dbStorePath);
+            $cmd .= ' -r '.escapeshellarg($this->tempDbPath);
         }
 
         $cmd .= ' '.escapeshellarg(DB_NAME);
@@ -462,7 +488,7 @@ class DUP_Database
             $handle    = popen($cmd, "r");
             if ($handle) {
                 $sql_header = "/* DUPLICATOR-LITE (MYSQL-DUMP BUILD MODE) MYSQL SCRIPT CREATED ON : ".@date("Y-m-d H:i:s")." */\n\n";
-                file_put_contents($this->dbStorePath, $sql_header, FILE_APPEND);
+                file_put_contents($this->tempDbPath, $sql_header, FILE_APPEND);
                 while (!feof($handle)) {
                     $line = fgets($handle); //get ony one line
                     if ($line) {
@@ -496,7 +522,7 @@ class DUP_Database
                             }
                         }
 
-                        file_put_contents($this->dbStorePath, $line, FILE_APPEND);
+                        file_put_contents($this->tempDbPath, $line, FILE_APPEND);
                         $output = "Ran from {$exePath}";
                     }
                 }
@@ -532,7 +558,7 @@ class DUP_Database
 
         $sql_footer = "\n\n/* Duplicator WordPress Timestamp: ".date("Y-m-d H:i:s")."*/\n";
         $sql_footer .= "/* ".DUPLICATOR_DB_EOF_MARKER." */\n";
-        file_put_contents($this->dbStorePath, $sql_footer, FILE_APPEND);
+        file_put_contents($this->tempDbPath, $sql_footer, FILE_APPEND);
         if ($mysqlResult !== 0) {
             /**
              * -1 error command shell 
@@ -542,8 +568,8 @@ class DUP_Database
              * 2 - Exception
              */
             DUP_Log::Info('MYSQL DUMP ERROR '.print_r($mysqlResult, true));
-            DUP_Log::error(__('Shell mysql dump error. Change Mysql dump engine in PHP mode', 'duplicator'),
-				implode("\n",DupLiteSnapLibIOU::getLastLinesOfFile($this->dbStorePath,DUPLICATOR_DB_MYSQLDUMP_ERROR_CONTAINING_LINE_COUNT)), Dup_ErrorBehavior::ThrowException);
+            DUP_Log::error(__('Shell mysql dump error. Change SQL Script to the "PHP Code" in the Duplicator > Settings > Packages.', 'duplicator'), implode("\n", DupLiteSnapLibIOU::getLastLinesOfFile($this->tempDbPath,
+                DUPLICATOR_DB_MYSQLDUMP_ERROR_CONTAINING_LINE_COUNT, DUPLICATOR_DB_MYSQLDUMP_ERROR_CHARS_IN_LINE_COUNT)), Dup_ErrorBehavior::ThrowException);
             return false;
         }
 
@@ -560,8 +586,8 @@ class DUP_Database
         global $wpdb;
 
         $wpdb->query("SET session wait_timeout = ".DUPLICATOR_DB_MAX_TIME);
-        if (($handle = fopen($this->dbStorePath, 'w+')) == false) {
-            DUP_Log::error('[PHP DUMP] ERROR Can\'t open sbStorePath "'.$this->dbStorePath.'"', Dup_ErrorBehavior::ThrowException);
+        if (($handle = fopen($this->tempDbPath, 'w+')) == false) {
+            DUP_Log::error('[PHP DUMP] ERROR Can\'t open sbStorePath "'.$this->tempDbPath.'"', Dup_ErrorBehavior::ThrowException);
         }
         $tables = $wpdb->get_col("SHOW FULL TABLES WHERE Table_Type != 'VIEW'");
 
@@ -605,6 +631,16 @@ class DUP_Database
             foreach ($procedures as $procedure) {
                 @fwrite($handle, "DELIMITER ;;\n");
                 $create = $wpdb->get_row("SHOW CREATE PROCEDURE `{$procedure}`", ARRAY_N);
+                @fwrite($handle, "{$create[2]} ;;\n");
+                @fwrite($handle, "DELIMITER ;\n\n");
+            }
+        }
+
+        $functions = $wpdb->get_col("SHOW FUNCTION STATUS WHERE `Db` = '{$wpdb->dbname}'", 1);
+        if (count($functions)) {
+            foreach ($functions as $function) {
+                @fwrite($handle, "DELIMITER ;;\n");
+                $create = $wpdb->get_row("SHOW CREATE FUNCTION `{$function}`", ARRAY_N);
                 @fwrite($handle, "{$create[2]} ;;\n");
                 @fwrite($handle, "DELIMITER ;\n\n");
             }
@@ -728,5 +764,10 @@ class DUP_Database
         global $wpdb;
         $table_prefix = (is_multisite() && !defined('MULTISITE')) ? $wpdb->base_prefix : $wpdb->get_blog_prefix(0);
         return $table_prefix;
+    }
+
+    public function getUrl()
+    {
+        return DUP_Settings::getSsdirUrl()."/".$this->File;
     }
 }

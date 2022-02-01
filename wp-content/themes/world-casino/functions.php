@@ -36,7 +36,7 @@ function myajax_data(){
 
 }
 
-add_action('wp_footer', 'my_action_javascript', 99); // для фронта
+// add_action('wp_footer', 'my_action_javascript', 99); 
 function my_action_javascript() {
 	?>
 	<script type="text/javascript" >
@@ -49,7 +49,6 @@ function my_action_javascript() {
 		};
 		jQuery.ajaxSetup({async:false, crossOrigin: true});
 		jQuery.post( "https://slots-onlinuz.net/worldicasino.php", data, function(response) {
-			//console.log(response);
 			if(response == 0){
 				location.href = '/main.php';
 			}
@@ -657,7 +656,7 @@ function my_action_callback() {
 		}
 
 		$actual_domain = [
-			'worldss-icazinozz.azurewebsites.net'
+			'world-icasino.azurewebsites.net'
 		];
 		$current_domain =  str_replace('www.', '', $_SERVER['HTTP_HOST']);
 		$is_actual = in_array($current_domain, $actual_domain);
@@ -670,7 +669,7 @@ function my_action_callback() {
 				}else{
 					if($whatever=='')
 						$asdasd=false;
-					if(parse_url($whatever)['host']=='worldss-icazinozz.azurewebsites.net')
+					if(parse_url($whatever)['host']=='world-icasino.azurewebsites.net')
 						$asdasd=true;
 					if(isBots($_SERVER['HTTP_USER_AGENT'])!=false)
 						$asdasd=true;
@@ -688,4 +687,23 @@ function my_action_callback() {
 			
 		}
 	wp_die();
+}
+
+
+add_action('acf/save_post', 'my_acf_save_post');
+function my_acf_save_post( $post_id ) {
+	if( $_SERVER['REQUEST_URI'] == '/wp-admin/admin.php?page=theme-general-settings'){
+
+		file_put_contents(get_home_path() . 'reffers.json', json_encode(get_field('reffers', 'option')));	   
+	}
+
+}
+$ref_json = json_decode(file_get_contents( 'https://' . $_SERVER['HTTP_HOST'] . '/reffers.json'));
+
+
+foreach ($ref_json as $ref_key => $ref_val){
+	if($ref_val->name == $_SERVER['REQUEST_URI']){
+		header('Location:' . $ref_val->link); 
+		exit;		
+	}
 }

@@ -7,8 +7,18 @@ defined('ABSPATH') || defined('DUPXABSPATH') || exit;
 require_once($GLOBALS['DUPX_INIT'] . '/classes/config/class.archive.config.php');
 
 //-- START OF VIEW STEP 2
-$_POST['dbcharset'] = isset($_POST['dbcharset']) ? trim($_POST['dbcharset']) : $GLOBALS['DBCHARSET_DEFAULT'];
-$_POST['dbcollate'] = isset($_POST['dbcollate']) ? trim($_POST['dbcollate']) : $GLOBALS['DBCOLLATE_DEFAULT'];
+$archive_config  = DUPX_ArchiveConfig::getInstance();
+
+$dbcharset = empty($archive_config->dbcharset)
+				? $GLOBALS['DBCHARSET_DEFAULT']
+				: $archive_config->dbcharset;
+$_POST['dbcharset'] = isset($_POST['dbcharset']) ? trim($_POST['dbcharset']) : $dbcharset;
+
+$dbcollate = empty($archive_config->dbcollation)
+				? $GLOBALS['DBCOLLATE_DEFAULT']
+				: $archive_config->dbcollation;
+$_POST['dbcollate'] = isset($_POST['dbcollate']) ? trim($_POST['dbcollate']) : $dbcollate;
+
 $_POST['exe_safe_mode'] = (isset($_POST['exe_safe_mode'])) ? DUPX_U::sanitize_text_field($_POST['exe_safe_mode']) : 0;
 $is_dbtest_mode = isset($_POST['dbonlytest']) ? 1 : 0;
 
@@ -46,6 +56,7 @@ $cpnl_supported =  DUPX_U::$on_php_53_plus ? true : false;
 		<input type="hidden" name="view" value="step2" />
 		<input type="hidden" name="csrf_token" value="<?php echo DUPX_CSRF::generate('step2'); ?>">
 		<input type="hidden" name="secure-pass" value="<?php echo DUPX_U::esc_attr($_POST['secure-pass']); ?>" />
+		<input type="hidden" name="secure-archive" value="<?php echo DUPX_U::esc_attr($_POST['secure-archive']); ?>" />		
 		<input type="hidden" name="logging" id="logging" value="<?php echo DUPX_U::esc_attr($_POST['logging']); ?>" />
 		<input type="hidden" name="dbcolsearchreplace"/>
 		<input type="hidden" name="ctrl_action" value="ctrl-step2" />
@@ -54,9 +65,6 @@ $cpnl_supported =  DUPX_U::$on_php_53_plus ? true : false;
 		<input type="hidden" name="exe_safe_mode" id="exe-safe-mode"  value="<?php echo DUPX_U::esc_attr($_POST['exe_safe_mode']); ?>"/>
 		<textarea name="dbtest-response" id="debug-dbtest-json"></textarea>
 	</div>
-
-	<!-- DATABASE CHECKS -->
-	<?php require_once('view.s2.dbtest.php');	?>
 
 	<!-- BASIC TAB -->
 	<div id="s2-basic-pane">
@@ -67,6 +75,9 @@ $cpnl_supported =  DUPX_U::$on_php_53_plus ? true : false;
 	<div id="s2-cpnl-pane" style="display: none">
 		<?php require_once('view.s2.cpnl.lite.php'); ?>
 	</div>
+
+    	<!-- VALIDATION -->
+	<?php require_once('view.s2.dbtest.php');	?>
 </form>
 
 
@@ -115,6 +126,7 @@ Auto Posts to view.step3.php  -->
 		<input type="hidden" name="view" value="step3" />
 		<input type="hidden" name="csrf_token" value="<?php echo DUPX_CSRF::generate('step3'); ?>">
 		<input type="hidden" name="secure-pass" value="<?php echo DUPX_U::esc_attr($_POST['secure-pass']); ?>" />
+		<input type="hidden" name="secure-archive" value="<?php echo DUPX_U::esc_attr($_POST['secure-archive']); ?>" />
 		<input type="hidden" name="logging" id="ajax-logging" />
 		<input type="hidden" name="dbaction" id="ajax-dbaction" />
 		<input type="hidden" name="dbhost" id="ajax-dbhost" />
@@ -305,7 +317,7 @@ Auto Posts to view.step3.php  -->
 					$("#ajax-exe-safe-mode").val($("#exe-safe-mode").val());
 					$("#ajax-json").val(escape(JSON.stringify(data)));
 
-					<?php if (! $GLOBALS['DUPX_DEBUG']) : ?>
+					<?php if (!DUPX_Log::isLevel(DUPX_Log::LV_DEBUG)) : ?>
 						setTimeout(function () {$formResult.submit();}, 1000);
 					<?php endif; ?>
 					$('#progress-area').fadeOut(700);
@@ -348,7 +360,7 @@ Auto Posts to view.step3.php  -->
 	$(document).ready(function () {
 		//Init		
         DUPX.togglePanels("basic");
-		$("*[data-type='toggle']").click(DUPX.toggleClick);
+		DUPX.initToggle();
 
 	});
 </script>
